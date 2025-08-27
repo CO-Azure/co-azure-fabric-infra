@@ -32,7 +32,7 @@ variable "vnet_address_space" {
   type        = string
 }
 
-variable "hub_vnet_id" {
+variable "hub_uksouth_vnet_id" {
   description = "Resource ID of the hub VNet for peering"
   type        = string
 }

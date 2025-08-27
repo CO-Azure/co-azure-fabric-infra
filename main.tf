@@ -4,7 +4,7 @@ locals {
     "UK West"  = "ukw"
   }
 
-  resource_name_prefix = lower("${var.workload_name}-${local.location_short[var.location]}-${var.environment}")
+  resource_name_prefix = lower("${var.workload_name}-${local.location_short[var.location]}")
   common_tags = merge(var.tags, {
     Environment = var.environment
     Workload    = var.workload_name
@@ -32,44 +32,43 @@ resource "azurerm_resource_group" "main" {
   tags     = local.common_tags
 }
 
-# module "virtual_network" {
-#   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-#   version = "~> 0.10"
+module "virtual_network" {
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version = "~> 0.10"
 
-#   name                = "vnet-${local.resource_name_prefix}"
-#   location            = azurerm_resource_group.main.location
-#   resource_group_name = azurerm_resource_group.main.name
+  name                = "vnet-${local.resource_name_prefix}"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
 
-#   address_space = [var.vnet_address_space]
+  address_space = [var.vnet_address_space]
 
-#   subnets = {
-#     for key, subnet in local.subnets : key => {
-#       name             = subnet.name
-#       address_prefixes = subnet.address_prefixes
-#       network_security_group = {
-#         id = azurerm_network_security_group.subnets[key].id
-#       }
-#     }
-#   }
+  subnets = {
+    for key, subnet in local.subnets : key => {
+      name             = subnet.name
+      address_prefixes = subnet.address_prefixes
+      network_security_group = {
+        id = azurerm_network_security_group.subnets[key].id
+      }
+    }
+  }
 
-#   peerings = {
-#     hub = {
-#       name                         = "peer-to-hub"
-#       remote_virtual_network_id    = var.hub_vnet_id
-#       allow_virtual_network_access = true
-#       allow_forwarded_traffic      = true
-#       allow_gateway_transit        = false
-#       use_remote_gateways          = true
-#     }
-#   }
+  peerings = {
+    hub = {
+      name                               = "peer-to-hub"
+      remote_virtual_network_resource_id = var.hub_uksouth_vnet_id
+      allow_virtual_network_access       = true
+      allow_forwarded_traffic            = true
+      allow_gateway_transit              = false
+    }
+  }
 
-#   tags = local.common_tags
-# }
+  tags = local.common_tags
+}
 
 resource "azurerm_network_security_group" "subnets" {
   for_each = local.subnets
 
-  name                = "nsg-${each.value.name}-${var.environment}"
+  name                = "nsg-${local.resource_name_prefix}-${each.key}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
