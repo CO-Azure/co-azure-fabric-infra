@@ -70,7 +70,7 @@ jobs:
           Copy-Item -Path "./*" -Exclude @(".git", ".terraform", ".github",  $stagingDirectory) -Recurse -Destination "./$stagingDirectory"
 
           if(Test-Path -Path ".terraform.lock.hcl") {
-            Copy-Item -Path ".terraform.lock.hcl" -Destination "./$stagingDirectory" -
+            Copy-Item -Path ".terraform.lock.hcl" -Destination "./$stagingDirectory"
           }
 
           $rootModuleFolderTerraformFolder = Join-Path -Path "./$stagingDirectory" -ChildPath $rootModuleFolder -AdditionalChildPath ".terraform"
