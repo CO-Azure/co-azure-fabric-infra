@@ -70,13 +70,15 @@ jobs:
           Copy-Item -Path "./*" -Exclude @(".git", ".terraform", ".github",  $stagingDirectory) -Recurse -Destination "./$stagingDirectory"
 
           if(Test-Path -Path ".terraform.lock.hcl") {
-            Copy-Item -Path ".terraform.lock.hcl" -Destination "./$stagingDirectory"
+            Copy-Item -Path ".terraform.lock.hcl" -Destination "./$stagingDirectory" -
           }
 
           $rootModuleFolderTerraformFolder = Join-Path -Path "./$stagingDirectory" -ChildPath $rootModuleFolder -AdditionalChildPath ".terraform"
           if(Test-Path -Path $rootModuleFolderTerraformFolder) {
             Remove-Item -Path $rootModuleFolderTerraformFolder -Recurse -Force
           }
+
+          Get-ChildItem -Path $stagingDirectory -Force
 
         shell: pwsh
 
@@ -124,6 +126,7 @@ jobs:
 
       - name: Terraform Init
         run: |
+          ls -la
           terraform \
           -chdir="${{inputs.root_module_folder_relative_path}}" \
           init \
