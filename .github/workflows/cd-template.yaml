@@ -67,7 +67,11 @@ jobs:
           $stagingDirectory = "staging"
           $rootModuleFolder = "${{inputs.root_module_folder_relative_path}}"
           New-Item -Path . -Name $stagingDirectory -ItemType "directory"
-          Copy-Item -Path "./*" -Exclude @(".git", ".terraform", ".github",  $stagingDirectory) -Recurse -Destination "./$stagingDirectory"
+          Copy-Item -Path "./*" -Exclude @(".git", ".terraform", ".github",  $stagingDirectory) -Include @(".terraform.lock.hcl") -Recurse -Destination "./$stagingDirectory"
+
+          if(Test-Path -Path ".terraform.lock.hcl") {
+            Copy-Item -Path ".terraform.lock.hcl" -Destination "./$stagingDirectory"
+          }
 
           $rootModuleFolderTerraformFolder = Join-Path -Path "./$stagingDirectory" -ChildPath $rootModuleFolder -AdditionalChildPath ".terraform"
           if(Test-Path -Path $rootModuleFolderTerraformFolder) {
