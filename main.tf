@@ -52,15 +52,15 @@ module "virtual_network" {
     }
   }
 
-  peerings = {
-    hub = {
-      name                               = "peer-to-hub"
-      remote_virtual_network_resource_id = var.hub_uksouth_vnet_id
-      allow_virtual_network_access       = true
-      allow_forwarded_traffic            = true
-      allow_gateway_transit              = false
-    }
-  }
+  #   peerings = {
+  #     hub = {
+  #       name                               = "peer-to-hub"
+  #       remote_virtual_network_resource_id = var.hub_uksouth_vnet_id
+  #       allow_virtual_network_access       = true
+  #       allow_forwarded_traffic            = true
+  #       allow_gateway_transit              = false
+  #     }
+  #   }
 
   tags = local.common_tags
 }
